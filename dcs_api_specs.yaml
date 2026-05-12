@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  title: Crop Sown MIS Central API
+  title: DCS Data API
   description: API for fetching crop sown records from DCS systems.
   version: 1.0.0
 
@@ -84,15 +84,16 @@ components:
 
         year:
           type: string
-          description: Agricultural year.
+          description: Range of the season in the form of year.
           example: "2025-2026"
 
         season:
           type: string
-          description: Agricultural season.
+          description: Name of the agriculture season having a single value out of rabi, kharif, zaid.
           enum:
             - Rabi
             - Kharif
+            - Zaid
           example: Rabi
 
         page_number:
@@ -107,7 +108,7 @@ components:
 
         last_primary_id:
           type: integer
-          description: Last processed primary identifier.
+          description: Last processed primary id.
           example: 0
 
       required:
@@ -191,23 +192,23 @@ components:
 
         state_lgd_code:
           type: integer
-          description: State LGD code.
+          description: State LGD Code is the unique 2-Digit LGD code assigned to a State/UT.
 
         district_lgd_code:
           type: integer
-          description: District LGD code.
+          description: LGD code of the district where the respective land is available.
 
         sub_district_lgd_code:
           type: integer
-          description: Sub-district LGD code.
+          description: LGD code of the sub district where the respective land is available.
 
         village_lgd_code:
           type: integer
-          description: Village LGD code.
+          description: LGD code of the village in which respective plot is available.
 
         farm_id:
           type: string
-          description: Unique farm identifier.
+          description: Unique Farm ID of the land within the state.
 
         centroid_lat:
           type: number
@@ -219,29 +220,42 @@ components:
 
         survey_number:
           type: string
-          description: Survey number.
+          description: |
+            This field captures the complete Survey Number or Sub-Survey Number, including any alphabetical characters and delimiters, as applicable in the respective state. The terminology and format may vary by state—for example, it may be referred to as Khasra Number, Dak Number, Khatian Number, etc. Below are a few examples of how Survey/Sub-Survey Numbers may appear across different states:
+                
+                | State Name     | Survey/Sub-Survey Number Sample |
+                | -------------- | ------------------------------- |
+                | Assam          | 125                             |
+                | Bihar          | 25                              |
+                | Odisha         | 16/371                          |
+                | Andhra Pradesh | 123/A/456                       |
+                | Gujarat        | 697                             |
 
         sub_survey_number:
           type: string
-          description: Sub-survey number.
+          description: |
+                  1. **State-Specific Decision**: Each state must determine its approach. If a state does not maintain **Sub-Survey Numbers**, all details should be provided under the `survey_number` field.  
+                  2. **Multiple Sub-Survey Numbers**: If a state maintains **one or more sub-survey numbers**, they should be **concatenated** and captured in the `sub_survey_number` field.  
+                  3. **Exception – Uttar Pradesh (UP)**: For states like **UP**, `sub_survey_number` is **not required**. Instead, the state should provide a **unique identifier** in the `survey_number` field.  
+                  4. **Exception – Karnataka**: In the case of **Karnataka**, the **character portion of the Survey Number** and the **Hissa Number** should be **concatenated** and captured under `sub_survey_number`.
 
         plot_area:
           type: number
-          description: Plot area.
+          description: Total Area of the farm plot.
 
         ulpin:
           type: string
           nullable: true
-          description: ULPIN identifier.
+          description: ULPIN is a 14-digit alphanumeric unique ID assigned to every land parcel in India under the Digital India Land Records Modernization Programme (DILRMP).
 
         land_usage_type:
           type: string
           nullable: true
-          description: Land usage type.
+          description: Type of use of land either as Agriculture (A) or Non Agricultural (NA).
 
         area_unit:
           type: string
-          description: Area measurement unit.
+          description: Area measurement unit as Hectare or Acre.
 
         crop_sown_area_unit:
           type: string
@@ -270,11 +284,11 @@ components:
 
         season:
           type: string
-          description: Agricultural season.
+          description: Name of the agriculture season having a single value out of rabi, kharif, zaid.
 
         year:
           type: string
-          description: Agricultural year.
+          description: Range of the season in the form of year.
 
         area:
           type: number
@@ -282,7 +296,7 @@ components:
 
         crop_code:
           type: string
-          description: Crop code.
+          description: 7-digit Unique code of each crop as per central core registry.
 
         crop_name:
           type: string
