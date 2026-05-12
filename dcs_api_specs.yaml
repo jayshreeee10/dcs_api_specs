@@ -1,0 +1,343 @@
+openapi: 3.0.0
+
+info:
+  title: Crop Sown MIS Central API
+  description: API for fetching crop sown records from DCS systems.
+  version: 1.0.0
+
+servers:
+  - url: https://abc.gov.in/dcsag_tg/central-core-api/agristack/v1/api
+
+paths:
+  /misCentral/cropSownV2:
+    post:
+      summary: Get crop sown records
+      description: Fetch paginated crop sown data for a season and year.
+
+      parameters:
+        - name: api-key
+          in: header
+          required: true
+          description: API key used for authentication.
+          schema:
+            type: string
+          example: YWdyaS1zdGFjayFAIyQlXiYqKClfKyabcd05
+
+        - name: season
+          in: header
+          required: false
+          description: Agricultural season filter.
+          schema:
+            type: string
+            enum:
+              - Rabi
+              - Kharif
+          example: Kharif
+
+        - name: startYear
+          in: header
+          required: false
+          description: Start year for filtering records.
+          schema:
+            type: string
+          example: "2025"
+
+        - name: endYear
+          in: header
+          required: false
+          description: End year for filtering records.
+          schema:
+            type: string
+          example: "2026"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CropSownRequest'
+
+      responses:
+        '200':
+          description: Successful response
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropSownResponse'
+
+components:
+
+  schemas:
+
+    CropSownRequest:
+      type: object
+      title: Crop Sown Request
+
+      properties:
+
+        last_update_tsp:
+          type: string
+          nullable: true
+          description: Timestamp used for incremental sync.
+          example: ""
+
+        year:
+          type: string
+          description: Agricultural year.
+          example: "2025-2026"
+
+        season:
+          type: string
+          description: Agricultural season.
+          enum:
+            - Rabi
+            - Kharif
+          example: Rabi
+
+        page_number:
+          type: integer
+          description: Current page number.
+          example: 1
+
+        page_size:
+          type: integer
+          description: Number of records to fetch per page.
+          example: 3
+
+        last_primary_id:
+          type: integer
+          description: Last processed primary identifier.
+          example: 0
+
+      required:
+        - year
+        - season
+        - page_number
+        - page_size
+
+    CropSownResponse:
+      type: object
+      title: Crop Sown Response
+
+      properties:
+
+        status:
+          type: string
+          description: API response status.
+          example: success
+
+        code:
+          type: integer
+          description: HTTP response code.
+          example: 200
+
+        message:
+          type: string
+          description: Response message.
+          example: Get records.
+
+        method:
+          type: string
+          description: HTTP request method.
+          example: POST
+
+        data:
+          type: object
+          description: Response payload object.
+
+          properties:
+
+            page_number:
+              type: integer
+              description: Current response page number.
+              example: 1
+
+            page_size:
+              type: integer
+              description: Number of records returned in response.
+              example: 3
+
+            image_base_url:
+              type: string
+              description: Base URL used to download crop images.
+              example: https://abc/dcsag_tg/crop-survey-api/agristack/v1/api/media/downloadFile/agristack/image/
+
+            data:
+              type: array
+              description: List of crop sown records.
+
+              items:
+                $ref: '#/components/schemas/CropSownRecord'
+
+    CropSownRecord:
+      type: object
+      title: Crop Sown Record
+
+      properties:
+
+        last_update_tsp:
+          type: string
+          format: date-time
+          description: Record last update timestamp.
+
+        is_deleted:
+          type: boolean
+          description: Indicates whether record is deleted.
+
+        primary_id:
+          type: integer
+          description: Unique primary identifier.
+
+        state_lgd_code:
+          type: integer
+          description: State LGD code.
+
+        district_lgd_code:
+          type: integer
+          description: District LGD code.
+
+        sub_district_lgd_code:
+          type: integer
+          description: Sub-district LGD code.
+
+        village_lgd_code:
+          type: integer
+          description: Village LGD code.
+
+        farm_id:
+          type: string
+          description: Unique farm identifier.
+
+        centroid_lat:
+          type: number
+          description: Plot centroid latitude.
+
+        centroid_long:
+          type: number
+          description: Plot centroid longitude.
+
+        survey_number:
+          type: string
+          description: Survey number.
+
+        sub_survey_number:
+          type: string
+          description: Sub-survey number.
+
+        plot_area:
+          type: number
+          description: Plot area.
+
+        ulpin:
+          type: string
+          nullable: true
+          description: ULPIN identifier.
+
+        land_usage_type:
+          type: string
+          nullable: true
+          description: Land usage type.
+
+        area_unit:
+          type: string
+          description: Area measurement unit.
+
+        crop_sown_area_unit:
+          type: string
+          description: Crop sown area measurement unit.
+
+        land_irrigation_source:
+          type: string
+          description: Source of irrigation.
+
+        land_irrigation_type:
+          type: string
+          description: Irrigation type.
+
+        crop_sowing_date:
+          type: string
+          format: date-time
+          description: Crop sowing date.
+
+        area_type_id:
+          type: integer
+          description: Area type identifier.
+
+        crop_class_id:
+          type: integer
+          description: Crop class identifier.
+
+        season:
+          type: string
+          description: Agricultural season.
+
+        year:
+          type: string
+          description: Agricultural year.
+
+        area:
+          type: number
+          description: Crop area.
+
+        crop_code:
+          type: string
+          description: Crop code.
+
+        crop_name:
+          type: string
+          description: Crop name.
+
+        status_code:
+          type: integer
+          description: Crop status code.
+
+        irrigated_area:
+          type: number
+          description: Irrigated area.
+
+        unirrigated_area:
+          type: number
+          description: Unirrigated area.
+
+        crop_photo:
+          type: array
+          description: List of crop image file names.
+
+          items:
+            type: string
+
+        na_area:
+          type: number
+          nullable: true
+          description: Non-agricultural area.
+
+        fallow_area:
+          type: number
+          nullable: true
+          description: Fallow area.
+
+        harvested_area:
+          type: number
+          nullable: true
+          description: Harvested area.
+
+        perennial_crop_area:
+          type: number
+          nullable: true
+          description: Perennial crop area.
+
+        biennial_crop_area:
+          type: number
+          nullable: true
+          description: Biennial crop area.
+
+        crop_sown_area_completed:
+          type: number
+          nullable: true
+          description: Completed crop sown area.
+
+        crop_sown_area_approved:
+          type: number
+          nullable: true
+          description: Approved crop sown area.
